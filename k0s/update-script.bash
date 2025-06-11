@@ -53,8 +53,8 @@ main() {
     hashes[$arch]=$(hash_file "${urls[$arch]}")
   done
 
-  packagePath=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)
-  outFile="$packagePath/${k0sMajorMinor/./_}.nix"
+  flakeDir=$(git rev-parse --show-toplevel)
+  outFile="$flakeDir/k0s/${k0sMajorMinor/./_}.nix"
 
   {
     cat <<EOF

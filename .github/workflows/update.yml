@@ -18,9 +18,24 @@ jobs:
       - name: nix-update
         env:
           GH_TOKEN: ${{ github.token }}
-        run: nix run github:Mic92/nix-update -- k0s_1_32 --flake --use-update-script
+        run: |
+          git config user.name "k0s-nix-update-bot"
+          git config user.email "k0s-nix-update-bot@dev.null"
+          nix run github:Mic92/nix-update -- k0s_1_32 --flake --use-update-script --override-filename k0s/1_32.nix --write-commit-message commit.md
+      - name: commit message
+        id: commit-message
+        run: |
+          if [ ! -f commit.md ]; then
+            echo "No updates found." >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          echo "message<<EOF" >> $GITHUB_OUTPUT
+          cat commit.md >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          rm commit.md
+
       - uses: peter-evans/create-pull-request@v7
         with:
-          commit-message: Update dependencies
-          title: 'feat(update): k0s_1_32'
+          commit-message: ${{ steps.commit-message.outputs.message }}
+          title: ${{ steps.commit-message.outputs.message }}
           branch: update-dependencies-1-32
