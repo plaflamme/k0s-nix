@@ -18,7 +18,7 @@ jobs:
       - name: nix-update
         env:
           GH_TOKEN: ${{ github.token }}
-        run: nix run github:Mic92/nix-update -- k0s_1_32 --flake --use-update-script
+        run: nix run github:Mic92/nix-update -- k0s_1_32 --flake --use-update-script --commit
       - uses: peter-evans/create-pull-request@v7
         with:
           commit-message: Update dependencies
